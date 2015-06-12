@@ -10,6 +10,4 @@ Using an intent, the business's latitude and longitude is then opened in Google 
 Happy eating! 
 
 # ToDo 
-* Write directions above the find button in order for the user to understand usage
-* Create an icon 
-* Create a Splash page
+* Return a List of the closest businesses and allow the user to pick, instead of automatically returning the closest business
