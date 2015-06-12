@@ -51,55 +51,44 @@ public class GooglePlaceSearch{
 	
 	// Given a latitude and longitude, return the closest open business as a String
 	// If no business is open, return null
-	public static Container returnClosestOpen(double latitude, double longitude) {
-		Container result = null;
+    public static Container returnClosestOpen(double latitude, double longitude) {
+        Container result = null;
 
-		// Create the URL to send to Google Places API
-		try {
-			URL searchURL = new URL(PLACES_API_URL
-					+ "location="
-					+ String.valueOf(latitude) + "," + String.valueOf(longitude)
-					+ "&rankby=distance"
-					+ "&types=food"
-					+ "&client_secret="
-					+ "&key="
-					+ API_KEY);
+        // Create the URL to send to Google Places API
+        // See https://developers.google.com/places/webservice/search for a description of the parameters
+        try {
+            URL searchURL = new URL(PLACES_API_URL
+                    + "location="
+                    + String.valueOf(latitude) + "," + String.valueOf(longitude)
+                    + "&rankby=distance"
+                    + "&types=food"
+                    + "&opennow"
+                    + "&key="
+                    + API_KEY);
 
-			// Make a Http GET request to the Google Places API and retrieve the response
-			String response = GooglePlaceSearch.sendGetRequest(searchURL);
+            // Make a Http GET request to the Google Places API and retrieve the response
+            String response = GooglePlaceSearch.sendGetRequest(searchURL);
 
-			try {
-				// Convert the String into a JSON Object and create a JSON array of the businesses returned
-				JSONObject jsonresponse = new JSONObject(response);
-				JSONArray  closest = jsonresponse.getJSONArray("results");
+            try {
+                // Convert the String into a JSON Object and create a JSON array of the businesses returned
+                JSONObject jsonresponse = new JSONObject(response);
+                JSONArray  closest = jsonresponse.getJSONArray("results");
 
-				// Iterate through the JSON array of closest businesses and return the first that is open
-				for (int i = 0; i < closest.length(); i++) {
+                // Return first element in the JSON Array
+                String businessName      = closest.getJSONObject(0).getString("name");
+                double businessLatitude  = (double) closest.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").get("lat");
+                double businessLongitude = (double) closest.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").get("lng");
 
-					// Check that the business has an hours field
-					if (closest.getJSONObject(i).has("opening_hours")) {
-
-						// Return the first business that is open
-						if (closest.getJSONObject(i).getJSONObject("opening_hours").get("open_now").toString().equals("true")) {
-
-							String businessName      = closest.getJSONObject(i).getString("name");
-							double businessLatitude  = (double) closest.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").get("lat");
-							double businessLongitude = (double) closest.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").get("lng");
-
-							result = new Container(businessName, businessLatitude, businessLongitude);
-
-							break;
-						}
-					}
-				}
-			}
-			catch(Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-		}
-		return result;
-	}
+                // Create a container object to store the business name latitude and longitude
+                result = new Container(businessName, businessLatitude, businessLongitude);
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
 }
