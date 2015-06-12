@@ -10,4 +10,4 @@ Using an intent, the business's latitude and longitude is then opened in Google 
 Happy eating! 
 
 # ToDo 
-* Return a List of the closest businesses and allow the user to pick, instead of automatically returning the closest business
+* Return a list of the closest businesses and allow the user to pick which one they want directions to, instead of automatically returning the closest business
