@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class GooglePlaceSearch extends MainActivity{
+public class GooglePlaceSearch{
     private static final String TAG = GooglePlaceSearch.class.getSimpleName();
 	// URL for nearby search for Google Places
 	private static final String PLACES_API_URL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
@@ -70,7 +70,7 @@ public class GooglePlaceSearch extends MainActivity{
 
 			try {
 				// Convert the String into a JSON Object and create a JSON array of the businesses returned
-				JSONObject jsonresponse = new JSONObject(response.toString());
+				JSONObject jsonresponse = new JSONObject(response);
 				JSONArray  closest = jsonresponse.getJSONArray("results");
 
 				// Iterate through the JSON array of closest businesses and return the first that is open
@@ -80,7 +80,7 @@ public class GooglePlaceSearch extends MainActivity{
 					if (closest.getJSONObject(i).has("opening_hours")) {
 
 						// Return the first business that is open
-						if (closest.getJSONObject(i).getJSONObject("opening_hours").get("open_now").toString() == "true") {
+						if (closest.getJSONObject(i).getJSONObject("opening_hours").get("open_now").toString().equals("true")) {
 
 							String businessName      = closest.getJSONObject(i).getString("name");
 							double businessLatitude  = (double) closest.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").get("lat");
