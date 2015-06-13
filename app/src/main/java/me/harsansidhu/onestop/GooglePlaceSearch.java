@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class GooglePlaceSearch{
     private static final String TAG = GooglePlaceSearch.class.getSimpleName();
@@ -51,8 +52,8 @@ public class GooglePlaceSearch{
 	
 	// Given a latitude and longitude, return the closest open business as a String
 	// If no business is open, return null
-    public static Container returnClosestOpen(double latitude, double longitude) {
-        Container result = null;
+    public static ArrayList<Container> returnClosestOpen(double latitude, double longitude) {
+        ArrayList<Container> resultList = new ArrayList<Container>();
 
         // Create the URL to send to Google Places API
         // See https://developers.google.com/places/webservice/search for a description of the parameters
@@ -74,13 +75,17 @@ public class GooglePlaceSearch{
                 JSONObject jsonresponse = new JSONObject(response);
                 JSONArray  closest = jsonresponse.getJSONArray("results");
 
-                // Return first element in the JSON Array
-                String businessName      = closest.getJSONObject(0).getString("name");
-                double businessLatitude  = (double) closest.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").get("lat");
-                double businessLongitude = (double) closest.getJSONObject(0).getJSONObject("geometry").getJSONObject("location").get("lng");
+                for (int i = 0; i < closest.length(); i++) {
+                    // Create a container object for each business and store in the arraylist
+                    String businessName      = closest.getJSONObject(i).getString("name");
+                    double businessLatitude  = (double) closest.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").get("lat");
+                    double businessLongitude = (double) closest.getJSONObject(i).getJSONObject("geometry").getJSONObject("location").get("lng");
 
-                // Create a container object to store the business name latitude and longitude
-                result = new Container(businessName, businessLatitude, businessLongitude);
+                    // Create a container object to store the business name latitude and longitude
+                    Container result = new Container(businessName, businessLatitude, businessLongitude);
+
+                    resultList.add(result);
+                }
             }
             catch(Exception ex) {
                 ex.printStackTrace();
@@ -89,6 +94,6 @@ public class GooglePlaceSearch{
         catch(Exception ex) {
             ex.printStackTrace();
         }
-        return result;
+        return resultList;
     }
 }

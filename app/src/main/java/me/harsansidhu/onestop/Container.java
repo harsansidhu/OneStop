@@ -1,8 +1,11 @@
 package me.harsansidhu.onestop;
+
+import java.io.Serializable;
+
 /*
     public container class that holds a businesses name, latitude, and longitude
  */
-public class Container {
+public class Container implements Serializable{
     public final String businessName;
     public final double latitude;
     public final double longitude;

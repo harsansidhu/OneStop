@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends ActionBarActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -55,10 +56,10 @@ public class MainActivity extends ActionBarActivity {
 
     // Private nested inner async class
     // Get user's current lat and long via Location Manger
-    // Pass lat and long to GooglePlaceSearch class which returns the closest open business
-    // Then prints the name of the closest business and gives directions to it in Google Maps
+    // Pass lat and long to GooglePlaceSearch class which returns a list of the closest
+    // open businesses
     private class OneStopAsync extends AsyncTask<Void, Void, Void> {
-        Container business; // Custom data type with businessName, latitude, longitude
+        ArrayList<Container> businessList; // Array of custom data type with businessName, latitude, longitude
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -68,33 +69,25 @@ public class MainActivity extends ActionBarActivity {
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
 
-            // Get the container object from the GooglePlaceSearch class
-            business = GooglePlaceSearch.returnClosestOpen(latitude, longitude);
+            // Get the Array of container objects from the GooglePlaceSearch class
+            businessList = GooglePlaceSearch.returnClosestOpen(latitude, longitude);
 
             return null;
         }
 
         protected void onPostExecute(Void result) {
-            // Use the resulting name to create a toast of the closest business
-
             // If the response is null display no result
-            if (business == null) {
+            if (businessList == null) {
                 Toast.makeText(getApplicationContext(), "No result", Toast.LENGTH_LONG).show();
             }
 
-            // If the business is valid display a toast with the name of the closest business
-            // Then open Google maps with directions to that location from the user's current location
+            // If the businessList is valid open a new activity which displays all the closest open
+            // businesses
             else {
-                Toast.makeText(getApplicationContext(), "Closest Open Business: " + business.businessName, Toast.LENGTH_LONG).show();
-
-                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
-                        Uri.parse("http://maps.google.com/maps?daddr="
-                                + String.valueOf(business.latitude)
-                                + ","
-                                + String.valueOf(business.longitude)));
-                // Default to opening in Google Maps
-                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
-                startActivity(intent);
+                // Pass the array of business through an intent and start the next Activity
+                Intent i = new Intent(MainActivity.this, ResultsActivity.class);
+                i.putExtra("businessList", businessList);
+                startActivity(i);
             }
         }
     }
