@@ -8,5 +8,6 @@ A list of businesses, sorted from nearest to furthest, is displayed. The user ca
 Happy eating! 
 
 # ToDo 
-* Clean up UI
+* Clean up UI on main activity by using a LinearLayout
 * Add a corresponding link to the website/menu of location 
+* Use Fragments instead of Activities
